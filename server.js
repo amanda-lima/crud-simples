@@ -39,3 +39,18 @@ app.post('/api/articles', function (req, res) {
     });
 });
 
+app.get('/api/articles/:id', function (req, res) {
+    db.serialize(() => {
+        db.each('SELECT id ID, title TITLE, content CONTENT FROM articles WHERE id =?', [req.params.id], function (err, row) {
+            if (err) {
+                res.status(400).json({"error": err.message})
+                return;
+            }
+            res.json({
+                "status": true,
+                "data": [row]
+            });
+        });
+    });
+});
+
