@@ -54,3 +54,16 @@ app.get('/api/articles/:id', function (req, res) {
     });
 });
 
+app.delete('/api/articles/:id', function (req, res) {
+    db.serialize(() => {
+        db.run('DELETE FROM articles WHERE id = ?', [req.params.id], function (err) {
+            if (err) {
+                res.status(400).json({"error": err.message})
+                return console.error(err.message);
+            }
+            res.json({
+                "status": true,
+            })
+        });
+    });
+});
