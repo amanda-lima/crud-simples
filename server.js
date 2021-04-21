@@ -67,3 +67,21 @@ app.delete('/api/articles/:id', function (req, res) {
         });
     });
 });
+
+app.patch('/api/articles/:id', function (req, res) {
+    db.serialize(() => {
+        db.run('UPDATE articles SET title = ?, content = ? WHERE id = ?', [req.body.title, req.body.content, req.params.id], function (err) {
+            if (err) res.status(400).json({"error": err.message});
+        });
+        db.each('SELECT id ID, title TITLE, content CONTENT FROM articles WHERE id =?', [req.params.id], function (err, row) {
+            if (err) {
+                res.status(400).json({"error": err.message})
+                return;
+            }
+            res.json({
+                "status": true,
+                "data": [row]
+            });
+        });
+    });
+});
